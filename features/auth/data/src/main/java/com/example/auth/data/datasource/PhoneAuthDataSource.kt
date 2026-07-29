@@ -12,27 +12,16 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-
 class PhoneAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) {
 
-    // TODO Unify userIdFlow and isSignedIn
     val userIdFlow: Flow<String?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser?.uid)
         }
         firebaseAuth.addAuthStateListener(listener)
         trySend(firebaseAuth.currentUser?.uid)
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
-    }
-
-    val isSignedIn: Flow<Boolean> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { auth ->
-            trySend(auth.currentUser != null)
-        }
-        firebaseAuth.addAuthStateListener(listener)
-        trySend(firebaseAuth.currentUser != null)
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 

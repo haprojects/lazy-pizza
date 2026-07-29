@@ -16,14 +16,12 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
-@OptIn(ExperimentalCoroutinesApi::class)
 class PhoneAuthDataSourceTest {
 
     @MockK(relaxed = true)
@@ -71,30 +69,6 @@ class PhoneAuthDataSourceTest {
 
         // Then
         assertThat(emittedUserId).isNull()
-    }
-
-    @Test
-    suspend fun `isSignedIn when user is logged in then emits true`() {
-        // Given
-        given { firebaseAuth.currentUser } returns firebaseUser
-
-        // When
-        val isSignedIn = phoneAuthDataSource.isSignedIn.first()
-
-        // Then
-        assertThat(isSignedIn).isTrue
-    }
-
-    @Test
-    suspend fun `isSignedIn when no user logged in then emits false`() {
-        // Given
-        given { firebaseAuth.currentUser } returns null
-
-        // When
-        val isSignedIn = phoneAuthDataSource.isSignedIn.first()
-
-        // Then
-        assertThat(isSignedIn).isFalse
     }
 
     @Test

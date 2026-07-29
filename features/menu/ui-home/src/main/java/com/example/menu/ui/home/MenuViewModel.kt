@@ -2,7 +2,7 @@ package com.example.menu.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.auth.domain.usecase.ObserveIsSignedInUseCase
+import com.example.auth.domain.usecase.ObserveUserIdFlowUseCase
 import com.example.auth.domain.usecase.SignOutUseCase
 import com.example.cart.domain.usecase.AddCartItemUseCase
 import com.example.cart.domain.usecase.ClearCartUseCase
@@ -32,7 +32,7 @@ class MenuViewModel @Inject constructor(
     private val removeCartItemUseCase: RemoveCartItemUseCase,
     private val clearCartUseCase: ClearCartUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val observeIsSignedInUseCase: ObserveIsSignedInUseCase,
+    private val observeUserIdFlowUseCase: ObserveUserIdFlowUseCase,
     private val menuMapper: MenuDomainToUiMapper,
 ) : ViewModel() {
 
@@ -52,10 +52,11 @@ class MenuViewModel @Inject constructor(
             combine(
                 observeMenuUseCase(),
                 observeCartUseCase(),
-                observeIsSignedInUseCase(),
-            ) { menuSections, cart, isSignedIn ->
+                observeUserIdFlowUseCase(),
+            ) { menuSections, cart, userId ->
                 val current = _uiState.value.content
                 val searchQuery = if (current is MenuContentUiState.Ready) current.searchQuery else ""
+                val isSignedIn = userId != null
 
                 val nextContent = menuMapper.mapToMenuContentUiState(menuSections, cart, searchQuery)
                 allSections = (nextContent as? MenuContentUiState.Ready)?.originalMenu ?: emptyList()

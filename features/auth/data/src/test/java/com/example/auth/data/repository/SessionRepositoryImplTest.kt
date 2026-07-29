@@ -39,23 +39,6 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    suspend fun `isSignedIn when subscribed then forwards data from phone auth data source`() {
-        // Given
-        val isSignedInFlow = MutableStateFlow(false)
-        given { phoneAuthDataSource.isSignedIn } returns isSignedInFlow
-
-        // When
-        sessionRepositoryImpl.isSignedIn.test {
-            // Then
-            assertThat(awaitItem()).isFalse()
-
-            isSignedInFlow.tryEmit(true)
-            assertThat(awaitItem()).isTrue()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     suspend fun `currentUserUid when called then returns current user uid from phone auth data source`() {
         // Given
         val mockUid = "user-id-123"

@@ -12,28 +12,28 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
-class ObserveIsSignedInUseCaseTest {
+class ObserveUserIdFlowUseCaseTest {
 
     @MockK
     private lateinit var sessionRepository: SessionRepository
 
     @InjectMockKs
-    private lateinit var useCase: ObserveIsSignedInUseCase
+    private lateinit var useCase: ObserveUserIdFlowUseCase
 
     @Test
     suspend fun `invoke when is signed in emits values then emits same values`() {
         // Given
-        val isSignedInFlow = MutableStateFlow(false)
-        given { sessionRepository.isSignedIn } returns isSignedInFlow
+        val userId: MutableStateFlow<String?> = MutableStateFlow(null)
+        given { sessionRepository.userIdFlow } returns userId
 
         // When
         useCase().test {
             // Then
-            isSignedInFlow.tryEmit(false)
-            assertThat(awaitItem()).isFalse()
+            userId.tryEmit(null)
+            assertThat(awaitItem()).isNull()
 
-            isSignedInFlow.tryEmit(true)
-            assertThat(awaitItem()).isTrue()
+            userId.tryEmit("user-id-123")
+            assertThat(awaitItem()).isEqualTo("user-id-123")
 
             cancelAndIgnoreRemainingEvents()
         }
